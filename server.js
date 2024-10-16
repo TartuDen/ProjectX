@@ -27,8 +27,8 @@ env.config();
 
 
 app.get("/", async(req, res)=>{
-    console.log(".....here.......\n", await GetUtensilsMOCK());
-    res.status(200).render("index.ejs",)
+    const equipmentList = await GetEquipmentListMOCK();
+    res.status(200).render("index.ejs",{equipmentList});
 })
 
 app.listen(port,(err)=>{

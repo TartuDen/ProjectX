@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipment and Reagents List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Equipment List</h1>
+
+    <!-- Equipment List Table -->
+    <form id="equipment-form">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <!-- Dynamically generate column headers for each equipment type -->
+            <% 
+              let equipmentTypes = [...new Set(equipmentList.map(equipment => equipment.name))]; 
+            %>
+            <% equipmentTypes.forEach(function(type) { %>
+              <th scope="col"><%= type.charAt(0).toUpperCase() + type.slice(1) %></th>
+            <% }); %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <% equipmentTypes.forEach(function(type) { %>
+              <td>
+                <!-- Iterate over equipment list and show equipment of this type -->
+                <% let filteredEquipments = equipmentList.filter(eq => eq.name === type); %>
+                <% filteredEquipments.forEach(function(equipment) { %>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="equip-<%= equipment.id %>" value="<%= equipment.id %>">
+                    <label class="form-check-label" for="equip-<%= equipment.id %>">
+                      <strong><%= equipment.name %></strong> (<%= equipment.code %>)<br>
+                      <small><%= equipment.description %></small>
+                    </label>
+                  </div>
+                <% }); %>
+              </td>
+            <% }); %>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Reagents and Materials Table -->
+      <h2 class="text-center mt-5 mb-4">Reagents and Materials</h2>
+      <table class="table table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Reagent Name</th>
+            <th scope="col">WH Code</th>
+            <th scope="col">Amount, kg</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <!-- Input fields for the reagents and materials -->
+            <td>
+              <input type="text" class="form-control" placeholder="Enter reagent name" name="reagentName" required>
+            </td>
+            <td>
+              <input type="text" class="form-control" placeholder="Enter WH code" name="whCode" required>
+            </td>
+            <td>
+              <input type="number" class="form-control" placeholder="Enter amount, kg" name="amountKg" step="0.01" min="0" required>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button type="submit" class="btn btn-primary mt-4">Submit</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

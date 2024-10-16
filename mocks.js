@@ -4,7 +4,7 @@ function simulateDelay(ms) {
 
 // Equipment list mock function
 async function GetEquipmentListMOCK() {
-  await delay(500); // Simulating a delay of 500ms
+  await simulateDelay(500); // Simulating a delay of 500ms
   return [
     {
       id: 1,
@@ -29,6 +29,18 @@ async function GetEquipmentListMOCK() {
       name: "druck filter",
       code: "046-7",
       description: "ss filter with 140L receiver",
+    },
+    {
+      id: 5,
+      name: "nutsh filter",
+      code: "046-2",
+      description: "PP filter without receiver",
+    },
+    {
+      id: 6,
+      name: "druck filter",
+      code: "046-5",
+      description: "ss filter with 30L receiver",
     }
   ];
 }
