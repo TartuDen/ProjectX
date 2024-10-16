@@ -28,7 +28,12 @@ env.config();
 
 app.get("/", async(req, res)=>{
     const equipmentList = await GetEquipmentListMOCK();
-    res.status(200).render("index.ejs",{equipmentList});
+    const reactorOps = await GetReactorOperationsMOCK();
+    const dFilterOps = await GetDFilterOperationsMOCK();
+    const nFilterOps = await GetNFilterOperationsMOCK();
+    const pPumpOps = await GetPPumpOperationsMOCK();
+    const cOvenOps = await GetConvOvenOperationsMOCK();
+    res.status(200).render("index.ejs",{equipmentList, reactorOps, dFilterOps,nFilterOps,pPumpOps,cOvenOps});
 })
 
 app.listen(port,(err)=>{

@@ -45,36 +45,116 @@
         </tbody>
       </table>
 
-      <!-- Reagents and Materials Table -->
-      <h2 class="text-center mt-5 mb-4">Reagents and Materials</h2>
-      <table class="table table-bordered">
-        <thead class="table-dark">
-          <tr>
-            <th scope="col">Reagent Name</th>
-            <th scope="col">WH Code</th>
-            <th scope="col">Amount, kg</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <!-- Input fields for the reagents and materials -->
-            <td>
-              <input type="text" class="form-control" placeholder="Enter reagent name" name="reagentName" required>
-            </td>
-            <td>
-              <input type="text" class="form-control" placeholder="Enter WH code" name="whCode" required>
-            </td>
-            <td>
-              <input type="number" class="form-control" placeholder="Enter amount, kg" name="amountKg" step="0.01" min="0" required>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Reagents and Materials Table (already implemented) -->
+    <h2>Reagents and Materials</h2>
+    <table class="table table-bordered" id="reagentsTable">
+      <thead>
+        <tr>
+          <th>Reagent Name</th>
+          <th>WH Code</th>
+          <th>Amount, kg</th>
+        </tr>
+      </thead>
+      <tbody id="reagentsTableBody">
+        <tr>
+          <td><input type="text" class="form-control"></td>
+          <td><input type="text" class="form-control"></td>
+          <td><input type="number" class="form-control" step="0.01"></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-primary" id="addRowBtn">+</button>
 
-      <button type="submit" class="btn btn-primary mt-4">Submit</button>
-    </form>
+    <!-- Operations Table -->
+    <h2 class="mt-5">Operations</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Operation Number</th>
+          <th>Equipment</th>
+          <th>Operation Type</th>
+          <th>Operation Details</th>
+          <th>Other</th>
+        </tr>
+      </thead>
+      <tbody id="operationsTableBody">
+        <tr>
+          <td>1</td>
+          <td>
+            <select class="form-select" id="equipmentSelector">
+              <option selected disabled>Select Equipment</option>
+            </select>
+          </td>
+          <td>
+            <select class="form-select" id="operationSelector" disabled>
+              <option selected disabled>Select Operation</option>
+            </select>
+          </td>
+          <td id="operationContent"></td>
+          <td id="operationOther"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const operationsData = {
+        reactor: <%- JSON.stringify(reactorOps) %>,
+        "druck filter": <%- JSON.stringify(dFilterOps) %>,
+        "nutsche filter": <%- JSON.stringify(nFilterOps) %>,
+        "peristaltic pump": <%- JSON.stringify(pPumpOps) %>,
+        "convection oven": <%- JSON.stringify(cOvenOps) %>
+      };
+
+      const equipmentSelector = document.getElementById('equipmentSelector');
+      const operationSelector = document.getElementById('operationSelector');
+      const operationContent = document.getElementById('operationContent');
+      const operationOther = document.getElementById('operationOther');
+
+      // Populate equipment selector
+      Object.keys(operationsData).forEach(equipment => {
+        const option = document.createElement('option');
+        option.value = equipment;
+        option.textContent = equipment;
+        equipmentSelector.appendChild(option);
+      });
+
+      // When equipment is selected, populate operation selector
+      equipmentSelector.addEventListener('change', function() {
+        const selectedEquipment = this.value;
+        operationSelector.innerHTML = '<option selected disabled>Select Operation</option>';
+        operationSelector.disabled = false;
+
+        operationsData[selectedEquipment].forEach((operation, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = operation.operation_type;
+          operationSelector.appendChild(option);
+        });
+      });
+
+      // When operation is selected, show operation details
+      operationSelector.addEventListener('change', function() {
+        const selectedEquipment = equipmentSelector.value;
+        const selectedOperationIndex = this.value;
+        const selectedOperation = operationsData[selectedEquipment][selectedOperationIndex];
+
+        operationContent.textContent = selectedOperation.content;
+        operationOther.textContent = selectedOperation.other;
+      });
+
+      // Add more rows in the reagents and materials table
+      document.getElementById('addRowBtn').addEventListener('click', function() {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td><input type="text" class="form-control"></td>
+          <td><input type="text" class="form-control"></td>
+          <td><input type="number" class="form-control" step="0.01"></td>
+        `;
+        document.getElementById('reagentsTableBody').appendChild(newRow);
+      });
+    });
+  </script>
 </body>
 </html>
