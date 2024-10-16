@@ -8,10 +8,13 @@
 </head>
 <body>
   <div class="container mt-5">
-    <h1 class="text-center mb-4">Equipment List</h1>
+    <h1 class="text-center mb-4">Equipment List and Reagents</h1>
 
-    <!-- Equipment List Table -->
-    <form id="equipment-form">
+    <!-- Equipment List and Reagents Form -->
+    <form id="equipment-form" action="/submit-equipment" method="POST">
+      
+      <!-- Equipment List Table -->
+      <h2>Equipment List</h2>
       <table class="table table-bordered table-hover">
         <thead class="table-dark">
           <tr>
@@ -32,7 +35,7 @@
                 <% let filteredEquipments = equipmentList.filter(eq => eq.name === type); %>
                 <% filteredEquipments.forEach(function(equipment) { %>
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="equip-<%= equipment.id %>" value="<%= equipment.id %>">
+                    <input class="form-check-input equipment-checkbox" type="checkbox" id="equip-<%= equipment.id %>" name="selectedEquipments" value="<%= equipment.name %>" data-code="<%= equipment.code %>">
                     <label class="form-check-label" for="equip-<%= equipment.id %>">
                       <strong><%= equipment.name %></strong> (<%= equipment.code %>)<br>
                       <small><%= equipment.description %></small>
@@ -45,27 +48,31 @@
         </tbody>
       </table>
 
-      <!-- Reagents and Materials Table (already implemented) -->
-    <h2>Reagents and Materials</h2>
-    <table class="table table-bordered" id="reagentsTable">
-      <thead>
-        <tr>
-          <th>Reagent Name</th>
-          <th>WH Code</th>
-          <th>Amount, kg</th>
-        </tr>
-      </thead>
-      <tbody id="reagentsTableBody">
-        <tr>
-          <td><input type="text" class="form-control"></td>
-          <td><input type="text" class="form-control"></td>
-          <td><input type="number" class="form-control" step="0.01"></td>
-        </tr>
-      </tbody>
-    </table>
-    <button class="btn btn-primary" id="addRowBtn">+</button>
+      <!-- Reagents and Materials Table -->
+      <h2>Reagents and Materials</h2>
+      <table class="table table-bordered" id="reagentsTable">
+        <thead>
+          <tr>
+            <th>Reagent Name</th>
+            <th>WH Code</th>
+            <th>Amount, kg</th>
+          </tr>
+        </thead>
+        <tbody id="reagentsTableBody">
+          <tr>
+            <td><input type="text" class="form-control" name="reagentName[]"></td>
+            <td><input type="text" class="form-control" name="whCode[]"></td>
+            <td><input type="number" class="form-control" name="amount[]" step="0.01"></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-primary" id="addRowBtn" type="button">+</button>
 
-    <!-- Operations Table -->
+      <!-- Submit Button -->
+      <button class="btn btn-success mt-3" type="submit">Submit</button>
+    </form>
+
+    <!-- Operations Table (Kept as per your request) -->
     <h2 class="mt-5">Operations</h2>
     <table class="table table-bordered">
       <thead>
@@ -99,6 +106,19 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Add more rows in the reagents and materials table
+      document.getElementById('addRowBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <td><input type="text" class="form-control" name="reagentName[]"></td>
+          <td><input type="text" class="form-control" name="whCode[]"></td>
+          <td><input type="number" class="form-control" name="amount[]" step="0.01"></td>
+        `;
+        document.getElementById('reagentsTableBody').appendChild(newRow);
+      });
+
+      // Rest of your JavaScript code for operations table
       const operationsData = {
         reactor: <%- JSON.stringify(reactorOps) %>,
         "druck filter": <%- JSON.stringify(dFilterOps) %>,
@@ -142,17 +162,6 @@
 
         operationContent.textContent = selectedOperation.content;
         operationOther.textContent = selectedOperation.other;
-      });
-
-      // Add more rows in the reagents and materials table
-      document.getElementById('addRowBtn').addEventListener('click', function() {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td><input type="text" class="form-control"></td>
-          <td><input type="text" class="form-control"></td>
-          <td><input type="number" class="form-control" step="0.01"></td>
-        `;
-        document.getElementById('reagentsTableBody').appendChild(newRow);
       });
     });
   </script>

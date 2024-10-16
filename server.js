@@ -25,6 +25,23 @@ env.config();
 // app.use(passport.initialize());
 // app.use(passport.session());
 
+// Handle form submission from the Equipment List
+app.post("/submit-equipment", async (req, res) => {
+    // Extract submitted data from the request body
+    const submittedEquipments = req.body.selectedEquipments;  // For selected equipment checkboxes
+    const reagentNames = req.body.reagentName || [];           // For reagent names
+    const whCodes = req.body.whCode || [];                    // For WH codes
+    const amounts = req.body.amount || [];                    // For amounts in kg
+
+    // Log the data to the console
+    console.log('Selected Equipments:', submittedEquipments);
+    console.log('Reagent Names:', reagentNames);
+    console.log('WH Codes:', whCodes);
+    console.log('Amounts (kg):', amounts);
+
+    // Send a response back to the client
+    res.send('Form data received and logged.');
+});
 
 app.get("/", async(req, res)=>{
     const equipmentList = await GetEquipmentListMOCK();
