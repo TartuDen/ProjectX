@@ -2,32 +2,36 @@ function simulateDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-equipment = [
-  {
-    id: 1,
-    name: "reactor",
-    code: "002-13",
-    description: "150L glass reactor",
-  },
-  {
-    id: 2,
-    name: "reactor",
-    code: "002-14",
-    description: "150L glass reactor",
-  },
-  {
-    id: 3,
-    name: "druck filter",
-    code: "046-6",
-    description: "ss filter with 40L receiver",
-  },
-  {
-    id: 4,
-    name: "druck filter",
-    code: "046-7",
-    description: "ss filter with 140L receiver",
-  },
-];
+// Equipment list mock function
+async function GetEquipmentListMOCK() {
+  await delay(500); // Simulating a delay of 500ms
+  return [
+    {
+      id: 1,
+      name: "reactor",
+      code: "002-13",
+      description: "150L glass reactor",
+    },
+    {
+      id: 2,
+      name: "reactor",
+      code: "002-14",
+      description: "150L glass reactor",
+    },
+    {
+      id: 3,
+      name: "druck filter",
+      code: "046-6",
+      description: "ss filter with 40L receiver",
+    },
+    {
+      id: 4,
+      name: "druck filter",
+      code: "046-7",
+      description: "ss filter with 140L receiver",
+    }
+  ];
+}
 
 // Reactor Operations
 async function GetReactorOperationsMOCK() {
@@ -398,6 +402,10 @@ async function GetParametersForOperationsMOCK() {
 }
 
 async function GetUtensilsMOCK() {
-  await simulatesimulateDelay(500);
+  await simulateDelay(500);
   return ["hose", "jug", "funnel", "shovel"];
 }
+
+
+
+export { GetEquipmentListMOCK, GetReactorOperationsMOCK, GetDFilterOperationsMOCK, GetNFilterOperationsMOCK, GetPPumpOperationsMOCK, GetConvOvenOperationsMOCK, GetParametersForOperationsMOCK, GetUtensilsMOCK };
