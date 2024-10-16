@@ -1,3 +1,4 @@
+<!-- index.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,13 +13,12 @@
 
     <!-- Equipment List and Reagents Form -->
     <form id="equipment-form" action="/submit-equipment" method="POST">
-      
+  
       <!-- Equipment List Table -->
       <h2>Equipment List</h2>
       <table class="table table-bordered table-hover">
         <thead class="table-dark">
           <tr>
-            <!-- Dynamically generate column headers for each equipment type -->
             <% 
               let equipmentTypes = [...new Set(equipmentList.map(equipment => equipment.name))]; 
             %>
@@ -31,11 +31,12 @@
           <tr>
             <% equipmentTypes.forEach(function(type) { %>
               <td>
-                <!-- Iterate over equipment list and show equipment of this type -->
                 <% let filteredEquipments = equipmentList.filter(eq => eq.name === type); %>
                 <% filteredEquipments.forEach(function(equipment) { %>
                   <div class="form-check">
-                    <input class="form-check-input equipment-checkbox" type="checkbox" id="equip-<%= equipment.id %>" name="selectedEquipments" value="<%= equipment.name %>" data-code="<%= equipment.code %>">
+                    <input class="form-check-input equipment-checkbox" type="checkbox" id="equip-<%= equipment.id %>" name="selectedEquipments[]" value="<%= equipment.name %>">
+                    <input type="hidden" name="equipmentCodes[]" value="<%= equipment.code %>">
+                    <input type="hidden" name="equipmentDescriptions[]" value="<%= equipment.description %>">
                     <label class="form-check-label" for="equip-<%= equipment.id %>">
                       <strong><%= equipment.name %></strong> (<%= equipment.code %>)<br>
                       <small><%= equipment.description %></small>
@@ -47,7 +48,7 @@
           </tr>
         </tbody>
       </table>
-
+    
       <!-- Reagents and Materials Table -->
       <h2>Reagents and Materials</h2>
       <table class="table table-bordered" id="reagentsTable">
@@ -67,10 +68,11 @@
         </tbody>
       </table>
       <button class="btn btn-primary" id="addRowBtn" type="button">+</button>
-
+    
       <!-- Submit Button -->
       <button class="btn btn-success mt-3" type="submit">Submit</button>
     </form>
+    
 
     <!-- Operations Table (Kept as per your request) -->
     <h2 class="mt-5">Operations</h2>

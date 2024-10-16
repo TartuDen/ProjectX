@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import bodyParser from 'body-parser';
 import env from 'dotenv'
@@ -7,6 +8,13 @@ import { GetEquipmentListMOCK, GetReactorOperationsMOCK, GetDFilterOperationsMOC
 
 const port = 8080;
 const app = express();
+
+const equipmentList = await GetEquipmentListMOCK();
+const reactorOps = await GetReactorOperationsMOCK();
+const dFilterOps = await GetDFilterOperationsMOCK();
+const nFilterOps = await GetNFilterOperationsMOCK();
+const pPumpOps = await GetPPumpOperationsMOCK();
+const cOvenOps = await GetConvOvenOperationsMOCK();
 
 // Middleware setup
 app.use(express.static("public")); // Serving static files from the "public" directory
@@ -26,30 +34,36 @@ env.config();
 // app.use(passport.session());
 
 // Handle form submission from the Equipment List
-app.post("/submit-equipment", async (req, res) => {
-    // Extract submitted data from the request body
-    const submittedEquipments = req.body.selectedEquipments;  // For selected equipment checkboxes
-    const reagentNames = req.body.reagentName || [];           // For reagent names
-    const whCodes = req.body.whCode || [];                    // For WH codes
-    const amounts = req.body.amount || [];                    // For amounts in kg
+app.post("/submit-equipment", (req, res) => {
+    const { selectedEquipments, reagentNames, whCodes, amounts } = req.body;
+  
+    // Prepare the equipment objects
+    const equipmentData = selectedEquipments.map(equipName => {
+      const equipmentInfo = equipmentList.find(eq => eq.name === equipName);
+      return {
+        name: equipName,
+        code: equipmentInfo ? equipmentInfo.code : null,
+        description: equipmentInfo ? equipmentInfo.description : null
+      };
+    });
+  
+    // Prepare the reagent objects
+    const reagentsData = reagentNames.map((name, index) => ({
+      reagent_name: name || null, // name is required
+      reagent_code: whCodes[index] || null, // optional
+      reagent_amount: amounts[index] || null // optional
+    })).filter(reagent => reagent.reagent_name); // Filter out if name is missing
+  
+    console.log("Selected Equipments: ", equipmentData);
+    console.log("Reagents Data: ", reagentsData);
+  
+    res.send("Data received and processed!");
+  });
+  
 
-    // Log the data to the console
-    console.log('Selected Equipments:', submittedEquipments);
-    console.log('Reagent Names:', reagentNames);
-    console.log('WH Codes:', whCodes);
-    console.log('Amounts (kg):', amounts);
-
-    // Send a response back to the client
-    res.send('Form data received and logged.');
-});
 
 app.get("/", async(req, res)=>{
-    const equipmentList = await GetEquipmentListMOCK();
-    const reactorOps = await GetReactorOperationsMOCK();
-    const dFilterOps = await GetDFilterOperationsMOCK();
-    const nFilterOps = await GetNFilterOperationsMOCK();
-    const pPumpOps = await GetPPumpOperationsMOCK();
-    const cOvenOps = await GetConvOvenOperationsMOCK();
+
     res.status(200).render("index.ejs",{equipmentList, reactorOps, dFilterOps,nFilterOps,pPumpOps,cOvenOps});
 })
 
