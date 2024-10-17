@@ -35,30 +35,32 @@ env.config();
 
 // Handle form submission from the Equipment List
 app.post("/submit-equipment", (req, res) => {
-    const { selectedEquipments, reagentNames, whCodes, amounts } = req.body;
-  
-    // Prepare the equipment objects
-    const equipmentData = selectedEquipments.map(equipName => {
-      const equipmentInfo = equipmentList.find(eq => eq.name === equipName);
-      return {
-        name: equipName,
-        code: equipmentInfo ? equipmentInfo.code : null,
-        description: equipmentInfo ? equipmentInfo.description : null
-      };
-    });
-  
-    // Prepare the reagent objects
-    const reagentsData = reagentNames.map((name, index) => ({
-      reagent_name: name || null, // name is required
-      reagent_code: whCodes[index] || null, // optional
-      reagent_amount: amounts[index] || null // optional
-    })).filter(reagent => reagent.reagent_name); // Filter out if name is missing
-  
-    console.log("Selected Equipments: ", equipmentData);
-    console.log("Reagents Data: ", reagentsData);
-  
-    res.send("Data received and processed!");
+  const { selectedEquipments, reagentName, whCode, amount } = req.body;
+  console.log("..........here.........\n", selectedEquipments, reagentName, whCode, amount);
+
+  // Prepare the equipment objects
+  const equipmentData = selectedEquipments.map(equipName => {
+    const equipmentInfo = equipmentList.find(eq => eq.name === equipName);
+    return {
+      name: equipName,
+      code: equipmentInfo ? equipmentInfo.code : null,
+      description: equipmentInfo ? equipmentInfo.description : null
+    };
   });
+
+  // Prepare the reagent objects
+  const reagentsData = reagentName.map((name, index) => ({
+    reagent_name: name || null, // name is required
+    reagent_code: whCode[index] || null, // optional
+    reagent_amount: amount[index] || null // optional
+  })).filter(reagent => reagent.reagent_name); // Filter out if name is missing
+
+  console.log("Selected Equipments: ", equipmentData);
+  console.log("Reagents Data: ", reagentsData);
+
+  res.send("Data received and processed!");
+});
+
   
 
 
