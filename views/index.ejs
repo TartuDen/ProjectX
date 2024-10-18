@@ -60,6 +60,14 @@
           </tr>
         </thead>
         <tbody id="reagentsTableBody">
+          <% reagentsData.forEach(function(reagent, index) { %>
+            <tr>
+              <td><input type="text" class="form-control" name="reagentName[]" value="<%= reagent.reagent_name %>"></td>
+              <td><input type="text" class="form-control" name="whCode[]" value="<%= reagent.reagent_code %>"></td>
+              <td><input type="number" class="form-control" name="amount[]" value="<%= reagent.reagent_amount %>" step="0.01"></td>
+            </tr>
+          <% }); %>
+          
           <tr>
             <td><input type="text" class="form-control" name="reagentName[]"></td>
             <td><input type="text" class="form-control" name="whCode[]"></td>

@@ -1,10 +1,9 @@
 // server.js
 import express from "express";
 import bodyParser from 'body-parser';
-import env from 'dotenv'
-
-import { GetEquipmentListMOCK, GetReactorOperationsMOCK, GetDFilterOperationsMOCK, GetNFilterOperationsMOCK, GetPPumpOperationsMOCK, GetConvOvenOperationsMOCK, GetParametersForOperationsMOCK, GetUtensilsMOCK } from './mocks.js'
-
+import session from 'express-session';
+import env from 'dotenv';
+import { GetEquipmentListMOCK, GetReactorOperationsMOCK, GetDFilterOperationsMOCK, GetNFilterOperationsMOCK, GetPPumpOperationsMOCK, GetConvOvenOperationsMOCK } from './mocks.js';
 
 const port = 8080;
 const app = express();
@@ -17,26 +16,22 @@ const pPumpOps = await GetPPumpOperationsMOCK();
 const cOvenOps = await GetConvOvenOperationsMOCK();
 
 // Middleware setup
-app.use(express.static("public")); // Serving static files from the "public" directory
-app.use(bodyParser.urlencoded({ extended: true })); // Parsing urlencoded request bodies
+app.use(express.static("public"));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 env.config();
-// app.use(session({
-//     secret: process.env.SESSION_SECRET, // Replace 'secret-key' with a secret key for session encryption
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: {
-//         maxAge: 1000 * 60 * 60
-//     }
-// }));
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+// Session middleware setup
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
+}));
 
 // Handle form submission from the Equipment List
 app.post("/submit-equipment", (req, res) => {
   const { selectedEquipments, reagentName, whCode, amount } = req.body;
-  console.log("..........here.........\n", selectedEquipments, reagentName, whCode, amount);
 
   // Prepare the equipment objects
   const equipmentData = selectedEquipments.map(equipName => {
@@ -55,18 +50,22 @@ app.post("/submit-equipment", (req, res) => {
     reagent_amount: amount[index] || null // optional
   })).filter(reagent => reagent.reagent_name); // Filter out if name is missing
 
+  // Store reagentsData in the session
+  req.session.reagentsData = reagentsData;
+
   console.log("Selected Equipments: ", equipmentData);
   console.log("Reagents Data: ", reagentsData);
 
-  res.send("Data received and processed!");
+  res.redirect("/");
 });
 
   
 
 
 app.get("/", async(req, res)=>{
+  const reagentsData = req.session.reagentsData || []; // Retrieve reagentsData from session
 
-    res.status(200).render("index.ejs",{equipmentList, reactorOps, dFilterOps,nFilterOps,pPumpOps,cOvenOps});
+    res.status(200).render("index.ejs",{equipmentList, reactorOps, dFilterOps,nFilterOps,pPumpOps,cOvenOps, reagentsData});
 })
 
 app.listen(port,(err)=>{
