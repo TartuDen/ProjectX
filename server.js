@@ -34,7 +34,9 @@ app.post("/submit-equipment", (req, res) => {
   const { selectedEquipments, reagentName, whCode, amount } = req.body;
 
   // Prepare the equipment objects
-  const equipmentData = selectedEquipments.map(equipName => {
+  let equipmentData;
+  if(selectedEquipments){
+       equipmentData = selectedEquipments.map(equipName => {
     const equipmentInfo = equipmentList.find(eq => eq.name === equipName);
     return {
       name: equipName,
@@ -42,6 +44,10 @@ app.post("/submit-equipment", (req, res) => {
       description: equipmentInfo ? equipmentInfo.description : null
     };
   });
+  }else{
+     equipmentData = [];
+  }
+
 
   // Prepare the reagent objects
   const reagentsData = reagentName.map((name, index) => ({
