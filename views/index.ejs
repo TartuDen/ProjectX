@@ -67,7 +67,7 @@
               <td><input type="number" class="form-control" name="amount[]" value="<%= reagent.reagent_amount %>" step="0.01"></td>
             </tr>
           <% }); %>
-          
+
           <tr>
             <td><input type="text" class="form-control" name="reagentName[]"></td>
             <td><input type="text" class="form-control" name="whCode[]"></td>
@@ -137,6 +137,7 @@
         "convection oven": <%- JSON.stringify(cOvenOps) %>
       };
 
+      const reagentsData = <%- JSON.stringify(reagentsData) %>; // Pass reagentsData to the script
       const equipmentSelector = document.getElementById('equipmentSelector');
       const operationSelector = document.getElementById('operationSelector');
       const operationContent = document.getElementById('operationContent');
