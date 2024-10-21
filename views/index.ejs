@@ -1,180 +1,269 @@
 <!-- index.ejs -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equipment and Reagents List</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">Equipment List and Reagents</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equipment and Reagents List</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center mb-4">Equipment List and Reagents</h1>
 
-    <!-- Equipment List and Reagents Form -->
-    <form id="equipment-form" action="/submit-equipment" method="POST">
-
-      <!-- Equipment List Table -->
-      <h2>Equipment List</h2>
-      <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-          <tr>
-            <% 
-              let equipmentTypes = [...new Set(equipmentList.map(equipment => equipment.name))]; 
-            %>
-            <% equipmentTypes.forEach(function(type) { %>
-              <th scope="col"><%= type.charAt(0).toUpperCase() + type.slice(1) %></th>
-            <% }); %>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <% equipmentTypes.forEach(function(type) { %>
+      <!-- Equipment List and Reagents Form -->
+      <form id="equipment-form" action="/submit-equipment" method="POST">
+        <!-- Equipment List Table -->
+        <h2>Equipment List</h2>
+        <table class="table table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <% let equipmentTypes = [...new Set(equipmentList.map(equipment =>
+              equipment.name))]; %> <% equipmentTypes.forEach(function(type) {
+              %>
+              <th scope="col">
+                <%= type.charAt(0).toUpperCase() + type.slice(1) %>
+              </th>
+              <% }); %>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <% equipmentTypes.forEach(function(type) { %>
               <td>
-                <% let filteredEquipments = equipmentList.filter(eq => eq.name === type); %>
-                <% filteredEquipments.forEach(function(equipment) { %>
-                  <div class="form-check">
-                    <input class="form-check-input equipment-checkbox" type="checkbox" id="equip-<%= equipment.id %>" name="selectedEquipments[]" value="<%= equipment.name %>">
-                    <input type="hidden" name="equipmentCodes[]" value="<%= equipment.code %>">
-                    <input type="hidden" name="equipmentDescriptions[]" value="<%= equipment.description %>">
-                    <label class="form-check-label" for="equip-<%= equipment.id %>">
-                      <strong><%= equipment.name %></strong> (<%= equipment.code %>)<br>
-                      <small><%= equipment.description %></small>
-                    </label>
-                  </div>
+                <% let filteredEquipments = equipmentList.filter(eq => eq.name
+                === type); %> <% filteredEquipments.forEach(function(equipment)
+                { %>
+                <div class="form-check">
+                  <input
+                    class="form-check-input equipment-checkbox"
+                    type="checkbox"
+                    id="equip-<%= equipment.id %>"
+                    name="selectedEquipments[]"
+                    value="<%= equipment.name %>"
+                  />
+                  <input
+                    type="hidden"
+                    name="equipmentCodes[]"
+                    value="<%= equipment.code %>"
+                  />
+                  <input
+                    type="hidden"
+                    name="equipmentDescriptions[]"
+                    value="<%= equipment.description %>"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="equip-<%= equipment.id %>"
+                  >
+                    <strong><%= equipment.name %></strong> (<%= equipment.code
+                    %>)<br />
+                    <small><%= equipment.description %></small>
+                  </label>
+                </div>
                 <% }); %>
               </td>
+              <% }); %>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Reagents and Materials Table -->
+        <h2>Reagents and Materials</h2>
+        <table class="table table-bordered" id="reagentsTable">
+          <thead>
+            <tr>
+              <th>Reagent Name</th>
+              <th>WH Code</th>
+              <th>Amount, kg</th>
+            </tr>
+          </thead>
+          <tbody id="reagentsTableBody">
+            <% reagentsData.forEach(function(reagent, index) { %>
+            <tr>
+              <td>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="reagentName[]"
+                  value="<%= reagent.reagent_name %>"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="whCode[]"
+                  value="<%= reagent.reagent_code %>"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="amount[]"
+                  value="<%= reagent.reagent_amount %>"
+                  step="0.01"
+                />
+              </td>
+            </tr>
             <% }); %>
-          </tr>
-        </tbody>
-      </table>
-    
-      <!-- Reagents and Materials Table -->
-      <h2>Reagents and Materials</h2>
-      <table class="table table-bordered" id="reagentsTable">
+
+            <tr>
+              <td>
+                <input type="text" class="form-control" name="reagentName[]" />
+              </td>
+              <td>
+                <input type="text" class="form-control" name="whCode[]" />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="amount[]"
+                  step="0.01"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-primary" id="addRowBtn" type="button">+</button>
+
+        <!-- Submit Button -->
+        <button class="btn btn-success mt-3" type="submit">Submit</button>
+      </form>
+
+      <!-- Operations Table (Kept as per your request) -->
+      <h2 class="mt-5">Operations</h2>
+      <table class="table table-bordered">
         <thead>
           <tr>
-            <th>Reagent Name</th>
-            <th>WH Code</th>
-            <th>Amount, kg</th>
+            <th>Operation Number</th>
+            <th>Equipment</th>
+            <th>Operation Type</th>
+            <th>Operation Details</th>
+            <th>Other</th>
           </tr>
         </thead>
-        <tbody id="reagentsTableBody">
-          <% reagentsData.forEach(function(reagent, index) { %>
-            <tr>
-              <td><input type="text" class="form-control" name="reagentName[]" value="<%= reagent.reagent_name %>"></td>
-              <td><input type="text" class="form-control" name="whCode[]" value="<%= reagent.reagent_code %>"></td>
-              <td><input type="number" class="form-control" name="amount[]" value="<%= reagent.reagent_amount %>" step="0.01"></td>
-            </tr>
-          <% }); %>
-
+        <tbody id="operationsTableBody">
           <tr>
-            <td><input type="text" class="form-control" name="reagentName[]"></td>
-            <td><input type="text" class="form-control" name="whCode[]"></td>
-            <td><input type="number" class="form-control" name="amount[]" step="0.01"></td>
+            <td>1</td>
+            <td>
+              <select class="form-select" id="equipmentSelector">
+                <option selected disabled>Select Equipment</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-select" id="operationSelector" disabled>
+                <option selected disabled>Select Operation</option>
+              </select>
+            </td>
+            <td id="operationContent"></td>
+            <td id="operationOther"></td>
           </tr>
         </tbody>
       </table>
-      <button class="btn btn-primary" id="addRowBtn" type="button">+</button>
-    
-      <!-- Submit Button -->
-      <button class="btn btn-success mt-3" type="submit">Submit</button>
-    </form>    
-    
+    </div>
 
-    <!-- Operations Table (Kept as per your request) -->
-    <h2 class="mt-5">Operations</h2>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Operation Number</th>
-          <th>Equipment</th>
-          <th>Operation Type</th>
-          <th>Operation Details</th>
-          <th>Other</th>
-        </tr>
-      </thead>
-      <tbody id="operationsTableBody">
-        <tr>
-          <td>1</td>
-          <td>
-            <select class="form-select" id="equipmentSelector">
-              <option selected disabled>Select Equipment</option>
-            </select>
-          </td>
-          <td>
-            <select class="form-select" id="operationSelector" disabled>
-              <option selected disabled>Select Operation</option>
-            </select>
-          </td>
-          <td id="operationContent"></td>
-          <td id="operationOther"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              // Add more rows in the reagents and materials table
+              document.getElementById('addRowBtn').addEventListener('click', function(event) {
+                event.preventDefault();
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                  <td><input type="text" class="form-control" name="reagentName"></td>
+                  <td><input type="text" class="form-control" name="whCode"></td>
+                  <td><input type="number" class="form-control" name="amount" step="0.01"></td>
+                `;
+                document.getElementById('reagentsTableBody').appendChild(newRow);
+              });
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Add more rows in the reagents and materials table
-      document.getElementById('addRowBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td><input type="text" class="form-control" name="reagentName"></td>
-          <td><input type="text" class="form-control" name="whCode"></td>
-          <td><input type="number" class="form-control" name="amount" step="0.01"></td>
-        `;
-        document.getElementById('reagentsTableBody').appendChild(newRow);
-      });
+              // Rest of your JavaScript code for operations table
+              const operationsData = {
+                "reactor": <%- JSON.stringify(reactorOps) %>,
+                "druck filter": <%- JSON.stringify(dFilterOps) %>,
+                "nutsche filter": <%- JSON.stringify(nFilterOps) %>,
+                "peristaltic pump": <%- JSON.stringify(pPumpOps) %>,
+                "convection oven": <%- JSON.stringify(cOvenOps) %>
+              };
 
-      // Rest of your JavaScript code for operations table
-      const operationsData = {
-        reactor: <%- JSON.stringify(reactorOps) %>,
-        "druck filter": <%- JSON.stringify(dFilterOps) %>,
-        "nutsche filter": <%- JSON.stringify(nFilterOps) %>,
-        "peristaltic pump": <%- JSON.stringify(pPumpOps) %>,
-        "convection oven": <%- JSON.stringify(cOvenOps) %>
-      };
+              const reagentsData = <%- JSON.stringify(reagentsData) %>; // Pass reagentsData to the script
+              const equipmentSelector = document.getElementById('equipmentSelector');
+              const operationSelector = document.getElementById('operationSelector');
+              const operationContent = document.getElementById('operationContent');
+              const operationOther = document.getElementById('operationOther');
 
-      const reagentsData = <%- JSON.stringify(reagentsData) %>; // Pass reagentsData to the script
-      const equipmentSelector = document.getElementById('equipmentSelector');
-      const operationSelector = document.getElementById('operationSelector');
-      const operationContent = document.getElementById('operationContent');
-      const operationOther = document.getElementById('operationOther');
+              // Populate equipment selector
+              Object.keys(operationsData).forEach(equipment => {
+                const option = document.createElement('option');
+                option.value = equipment;
+                option.textContent = equipment;
+                equipmentSelector.appendChild(option);
+              });
 
-      // Populate equipment selector
-      Object.keys(operationsData).forEach(equipment => {
-        const option = document.createElement('option');
-        option.value = equipment;
-        option.textContent = equipment;
-        equipmentSelector.appendChild(option);
-      });
+              // When equipment is selected, populate operation selector
+              equipmentSelector.addEventListener('change', function() {
+                const selectedEquipment = this.value;
+                operationSelector.innerHTML = '<option selected disabled>Select Operation</option>';
+                operationSelector.disabled = false;
 
-      // When equipment is selected, populate operation selector
-      equipmentSelector.addEventListener('change', function() {
-        const selectedEquipment = this.value;
-        operationSelector.innerHTML = '<option selected disabled>Select Operation</option>';
-        operationSelector.disabled = false;
+                operationsData[selectedEquipment].forEach((operation, index) => {
+                  const option = document.createElement('option');
+                  option.value = index;
+                  option.textContent = operation.operation_type;
+                  operationSelector.appendChild(option);
+                });
+              });
 
-        operationsData[selectedEquipment].forEach((operation, index) => {
-          const option = document.createElement('option');
-          option.value = index;
-          option.textContent = operation.operation_type;
-          operationSelector.appendChild(option);
-        });
-      });
+              // When operation is selected, show operation details with reagent dropdown
+            operationSelector.addEventListener('change', function() {
+              const selectedEquipment = equipmentSelector.value;
+              const selectedOperationIndex = this.value;
+              const selectedOperation = operationsData[selectedEquipment][selectedOperationIndex];
 
-      // When operation is selected, show operation details
-      operationSelector.addEventListener('change', function() {
-        const selectedEquipment = equipmentSelector.value;
-        const selectedOperationIndex = this.value;
-        const selectedOperation = operationsData[selectedEquipment][selectedOperationIndex];
+              // Replace {material} placeholder with <select> dropdown
+              let content = selectedOperation.content;
 
-        operationContent.textContent = selectedOperation.content;
-        operationOther.textContent = selectedOperation.other;
-      });
-    });
-  </script>
-</body>
+              if (content.includes('{material}')) {
+                const materialSelect = createMaterialSelect(reagentsData);
+                content = content.replace('{material}', materialSelect.outerHTML);
+              }
+
+              // Insert the updated content and other information
+              operationContent.innerHTML = content;
+              operationOther.textContent = selectedOperation.other;
+            });
+
+            // Function to create a select element with reagent options
+            function createMaterialSelect(reagents) {
+              const select = document.createElement('select');
+              select.className = 'form-select'; // Add any necessary classes
+
+              // Set width inline (e.g., 150px)
+              select.style.width = '150px';
+
+              // Add a default option
+              const defaultOption = document.createElement('option');
+              defaultOption.textContent = 'Select Reagent';
+              defaultOption.disabled = true;
+              defaultOption.selected = true;
+              select.appendChild(defaultOption);
+
+              // Add reagent options
+              reagents.forEach(reagent => {
+                const option = document.createElement('option');
+                option.value = reagent.reagent_name;
+                option.textContent = reagent.reagent_name;
+                select.appendChild(option);
+              });
+
+              return select;
+            }
+          });
+    </script>
+  </body>
 </html>
